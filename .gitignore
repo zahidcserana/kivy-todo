@@ -1,0 +1,22 @@
+# Buildozer
+.buildozer/
+bin/
+
+# Virtual environment
+kivy_env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Database (runtime data)
+*.db
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
