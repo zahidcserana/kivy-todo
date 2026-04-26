@@ -1,0 +1,115 @@
+#:kivy 2.0
+#:import dp kivy.metrics.dp
+
+<TodoRow>:
+    orientation: "horizontal"
+    size_hint_y: None
+    height: dp(60)
+    padding: dp(8), dp(4)
+    spacing: dp(8)
+    canvas.before:
+        Color:
+            rgba: (0.15, 0.15, 0.18, 1) if not self.done else (0.1, 0.1, 0.12, 1)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10)]
+
+    # Checkbox area
+    CheckBox:
+        size_hint: None, None
+        size: dp(40), dp(40)
+        pos_hint: {"center_y": 0.5}
+        active: root.done
+        color: (0.2, 0.7, 0.4, 1) if root.done else (0.6, 0.6, 0.7, 1)
+        on_active: root.on_toggle()
+
+    # Title label
+    Label:
+        text: root.title
+        font_size: dp(16)
+        halign: "left"
+        valign: "middle"
+        text_size: self.width, None
+        shorten: True
+        shorten_from: "right"
+        color: (0.5, 0.5, 0.55, 1) if root.done else (0.95, 0.95, 0.95, 1)
+        strikethrough: root.done
+
+    # Delete button
+    Button:
+        size_hint: None, None
+        size: dp(36), dp(36)
+        pos_hint: {"center_y": 0.5}
+        text: "✕"
+        font_size: dp(14)
+        background_color: (0, 0, 0, 0)
+        color: (0.8, 0.3, 0.3, 1)
+        on_release: root.on_delete()
+
+<TodoListView>:
+    viewclass: "TodoRow"
+    RecycleBoxLayout:
+        default_size: None, dp(68)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: "vertical"
+        spacing: dp(6)
+        padding: dp(10), dp(6)
+
+<TodoListScreen>:
+    canvas.before:
+        Color:
+            rgba: (0.08, 0.08, 0.1, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 0
+
+        # Header
+        BoxLayout:
+            size_hint_y: None
+            height: dp(64)
+            padding: dp(16), dp(8)
+            canvas.before:
+                Color:
+                    rgba: (0.12, 0.12, 0.16, 1)
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                text: "My Todos"
+                font_size: dp(22)
+                bold: True
+                color: (0.95, 0.95, 0.95, 1)
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+            Button:
+                size_hint: None, None
+                size: dp(100), dp(36)
+                pos_hint: {"center_y": 0.5}
+                text: "Clear done"
+                font_size: dp(12)
+                background_color: (0.3, 0.15, 0.15, 1)
+                color: (1, 0.5, 0.5, 1)
+                on_release: root.confirm_clear_done()
+
+        # Todo list
+        TodoListView:
+            id: todo_list
+
+        # Add button
+        Button:
+            size_hint_y: None
+            height: dp(56)
+            text: "+ Add Todo"
+            font_size: dp(18)
+            bold: True
+            background_color: (0.2, 0.55, 1, 1)
+            color: (1, 1, 1, 1)
+            on_release: root.open_add_dialog()
