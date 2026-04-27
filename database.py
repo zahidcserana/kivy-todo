@@ -1,7 +1,8 @@
 from peewee import SqliteDatabase, Model, CharField, BooleanField, DateTimeField
 from datetime import datetime
+import os
 
-db = SqliteDatabase("todos.db")
+db = SqliteDatabase(None)
 
 
 class Todo(Model):
@@ -13,7 +14,8 @@ class Todo(Model):
         database = db
 
 
-def init_db():
+def init_db(data_dir="."):
+    db.init(os.path.join(data_dir, "todos.db"))
     db.connect()
     db.create_tables([Todo], safe=True)
 

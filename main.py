@@ -1,3 +1,5 @@
+import os
+import traceback
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.recycleview import RecycleView
@@ -11,10 +13,11 @@ from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.lang import Builder
+from kivy.utils import platform
 from database import init_db, get_all_todos, add_todo, toggle_todo, delete_todo, clear_done
 
-# Mobile-friendly window size for desktop testing
-Window.size = (400, 700)
+if platform != "android":
+    Window.size = (400, 700)
 
 
 class TodoRow(RecycleDataViewBehavior, BoxLayout):
@@ -126,11 +129,19 @@ class TodoListScreen(Screen):
 
 class TodoApp(App):
     def build(self):
-        init_db()
-        Builder.load_file("ui.kv")
-        sm = ScreenManager()
-        sm.add_widget(TodoListScreen(name="list"))
-        return sm
+        try:
+            init_db(self.user_data_dir)
+            kv_file = os.path.join(os.path.dirname(__file__), "ui.kv")
+            Builder.load_file(kv_file)
+            sm = ScreenManager()
+            sm.add_widget(TodoListScreen(name="list"))
+            return sm
+        except Exception:
+            # Write crash log to user_data_dir so it can be retrieved
+            log_path = os.path.join(self.user_data_dir, "crash.log")
+            with open(log_path, "w") as f:
+                f.write(traceback.format_exc())
+            raise
 
 
 if __name__ == "__main__":
